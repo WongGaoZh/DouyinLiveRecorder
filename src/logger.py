@@ -13,7 +13,7 @@ logger.add(
     format=custom_format,
     level="DEBUG",
     colorize=True,
-    enqueue=True
+    enqueue=False  # 打包后的应用不支持多进程队列
 )
 
 script_path = os.path.split(os.path.realpath(sys.argv[0]))[0]
@@ -24,7 +24,7 @@ logger.add(
     format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} - {message}",
     filter=lambda i: i["level"].name != "INFO",
     serialize=False,
-    enqueue=True,
+    enqueue=False,  # 打包后的应用不支持多进程队列
     retention=1,
     rotation="300 KB",
     encoding='utf-8'
@@ -36,7 +36,7 @@ logger.add(
     format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {message}",
     filter=lambda i: i["level"].name == "INFO",
     serialize=False,
-    enqueue=True,
+    enqueue=False,  # 打包后的应用不支持多进程队列
     retention=1,
     rotation="300 KB",
     encoding='utf-8'

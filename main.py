@@ -1793,9 +1793,27 @@ while True:
                 ini_URL_content = file.read().strip()
 
         if not ini_URL_content.strip():
-            input_url = input('请输入要录制的主播直播间网址（尽量使用PC网页端的直播间地址）:\n')
-            with open(url_config_file, 'w', encoding=text_encoding) as file:
-                file.write(input_url)
+            # 检查是否有交互式终端（避免打包后 input() 崩溃）
+            if sys.stdin and sys.stdin.isatty():
+                input_url = input('请输入要录制的主播直播间网址（尽量使用PC网页端的直播间地址）:\n')
+                with open(url_config_file, 'w', encoding=text_encoding) as file:
+                    file.write(input_url)
+            else:
+                # 打包后或后台运行时，写入默认提示信息
+                logger.warning("URL_config.ini 为空，请手动添加直播间 URL")
+                with open(url_config_file, 'w', encoding=text_encoding) as file:
+                    file.write("# DouyinLiveRecorder URL 配置文件\n")
+                    file.write("# 每行一个直播间 URL，支持以下格式：\n")
+                    file.write("# 1. 直接 URL：https://live.douyin.com/123456\n")
+                    file.write("# 2. 指定画质：超清,https://live.douyin.com/123456\n")
+                    file.write("# 3. 注释行：#https://live.douyin.com/123456（暂时禁用）\n\n")
+                    file.write("# 请在下方添加你的直播间 URL：\n")
+                print("\n" + "="*60)
+                print("URL_config.ini 配置文件为空！")
+                print(f"请编辑以下文件，添加要录制的直播间 URL：")
+                print(f"  {url_config_file}")
+                print("="*60 + "\n")
+                sys.exit(0)  # 优雅退出，不要崩溃
     except OSError as err:
         logger.error(f"发生 I/O 错误: {err}")
 
